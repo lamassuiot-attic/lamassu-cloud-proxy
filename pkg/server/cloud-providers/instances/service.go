@@ -17,7 +17,7 @@ type Service interface {
 	GetConfiguration(ctx context.Context) (interface{}, []cloudproviders.CloudProviderCAConfig, error)
 	GetDeviceConfiguration(ctx context.Context, deviceID string) (interface{}, error)
 
-	UpdateCaStatus(ctx context.Context, caName string, status string) error
+	UpdateCaStatus(ctx context.Context, caName string, status string, certificateID string) error
 	UpdateCertStatus(ctx context.Context, caName string, certSerialNumber string, status string, deviceCert string, caCert string) error
 }
 

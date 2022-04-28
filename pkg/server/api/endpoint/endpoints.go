@@ -152,14 +152,14 @@ func MakeEventHandlerEndpoint(s service.Service) endpoint.Endpoint {
 
 		case "io.lamassu.ca.update":
 
-			var data LamassuCaDeleteEvent
+			var data LamassuCaUpdateStatusEvent
 			json.Unmarshal(event.Data(), &data)
 			err := s.HandleUpdateCaStatusEvent(ctx, data.CaName, data.Status)
 			return nil, err
 
 		case "io.lamassu.cert.update":
 
-			var data LamassuDeleteCertEvent
+			var data LamassuCertUpdateStatusEvent
 			json.Unmarshal(event.Data(), &data)
 			err := s.HandleUpdateCertStatusEvent(ctx, data.CaName, data.SerialNumber, data.Status)
 			return nil, err

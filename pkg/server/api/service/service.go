@@ -11,9 +11,8 @@ import (
 	"github.com/go-kit/log/level"
 	consul "github.com/hashicorp/consul/api"
 	"github.com/lamassuiot/lamassu-aws-connector/pkg/client"
-	lamassucaclient "github.com/lamassuiot/lamassu-ca/client"
+	lamassucaclient "github.com/lamassuiot/lamassu-ca/pkg/client"
 	lamassuErrors "github.com/lamassuiot/lamassu-cloud-proxy/pkg/server/api/errors"
-	"github.com/lamassuiot/lamassu-cloud-proxy/pkg/server/api/utils"
 	cloudproviders "github.com/lamassuiot/lamassu-cloud-proxy/pkg/server/cloud-providers"
 	cloudProviderClient "github.com/lamassuiot/lamassu-cloud-proxy/pkg/server/cloud-providers/instances"
 	"github.com/lamassuiot/lamassu-cloud-proxy/pkg/server/cloud-providers/store"
@@ -102,7 +101,6 @@ func (s *cloudProxyService) GetCloudConnectors(ctx context.Context) ([]cloudprov
 			level.Error(s.logger).Log("err", err)
 			continue
 		}
-
 		for idx, syncCA := range syncCAs {
 			syncCAs[idx].ConsistencyStatus = cloudproviders.ConsistencyStatus_Disabled.String()
 
@@ -302,8 +300,20 @@ func (s *cloudProxyService) HandleUpdateCaStatusEvent(ctx context.Context, caNam
 					level.Error(s.logger).Log("err", err)
 					continue
 				}
-
-				connectorService.UpdateCaStatus(ctx, caName, status)
+				_, casConfig, err := connectorService.GetConfiguration(ctx)
+				if err != nil {
+					level.Error(s.logger).Log("err", err)
+					return err
+				}
+				var certificateID string
+				for _, ca := range casConfig {
+					if ca.CAName == caName {
+						caConfig := ca.Config.(client.AWSIotCoreCA)
+						certificateID = caConfig.CertificateID
+						break
+					}
+				}
+				connectorService.UpdateCaStatus(ctx, caName, status, certificateID)
 			}
 		}
 	}
@@ -357,17 +367,7 @@ func (s *cloudProxyService) HandleUpdateCertStatusEvent(ctx context.Context, caN
 					level.Error(s.logger).Log("err", err)
 					continue
 				}
-				deviceCertPem, err := utils.DecodeB64(deviceCert.CertContent.CerificateBase64)
-				if err != nil {
-					level.Error(s.logger).Log("err", err)
-					return err
-				}
-				caCertPem, err := utils.DecodeB64(caCert.CertContent.CerificateBase64)
-				if err != nil {
-					level.Error(s.logger).Log("err", err)
-					return err
-				}
-				connectorService.UpdateCertStatus(ctx, deviceID, certSerialNumber, status, deviceCertPem, caCertPem)
+				connectorService.UpdateCertStatus(ctx, deviceID, certSerialNumber, status, deviceCert.CertContent.CerificateBase64, caCert.CertContent.CerificateBase64)
 			}
 		}
 	}
@@ -417,9 +417,7 @@ func (s *cloudProxyService) UpdateCertStatus(ctx context.Context, deviceID strin
 					level.Error(s.logger).Log("err", err)
 					continue
 				}
-				deviceCertPem, err := utils.DecodeB64(deviceCert.CertContent.CerificateBase64)
-				caCertPem, err := utils.DecodeB64(caCert.CertContent.CerificateBase64)
-				connectorService.UpdateCertStatus(ctx, deviceID, certSerialNumber, status, deviceCertPem, caCertPem)
+				connectorService.UpdateCertStatus(ctx, deviceID, certSerialNumber, status, deviceCert.CertContent.CerificateBase64, caCert.CertContent.CerificateBase64)
 			}
 		}
 	}
@@ -461,8 +459,20 @@ func (s *cloudProxyService) UpdateCaStatus(ctx context.Context, caName string, s
 					level.Error(s.logger).Log("err", err)
 					continue
 				}
-
-				connectorService.UpdateCaStatus(ctx, caName, status)
+				_, casConfig, err := connectorService.GetConfiguration(ctx)
+				if err != nil {
+					level.Error(s.logger).Log("err", err)
+					return err
+				}
+				var certificateID string
+				for _, ca := range casConfig {
+					if ca.CAName == caName {
+						caConfig := ca.Config.(client.AWSIotCoreCA)
+						certificateID = caConfig.CertificateID
+						break
+					}
+				}
+				connectorService.UpdateCaStatus(ctx, caName, status, certificateID)
 			}
 		}
 	}

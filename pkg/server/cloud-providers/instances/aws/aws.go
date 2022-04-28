@@ -33,7 +33,7 @@ type AwsService interface {
 	GetConfiguration(ctx context.Context) (interface{}, []cloudproviders.CloudProviderCAConfig, error)
 	GetDeviceConfiguration(ctx context.Context, deviceID string) (interface{}, error)
 	UpdateCertStatus(ctx context.Context, caName string, certSerialNumber string, status string, deviceCert string, caCert string) error
-	UpdateCaStatus(ctx context.Context, caName string, status string) error
+	UpdateCaStatus(ctx context.Context, caName string, status string, certificateID string) error
 }
 
 type AwsConnectorSettings struct {
@@ -108,13 +108,13 @@ func (s *AwsConnectorSettings) GetConfiguration(ctx context.Context) (interface{
 	}, cas, nil
 }
 
-func (s *AwsConnectorSettings) UpdateCaStatus(ctx context.Context, caName string, status string) error {
+func (s *AwsConnectorSettings) UpdateCaStatus(ctx context.Context, caName string, status string, certificateID string) error {
 
 	awsClient, err := client.NewAwsConnectorClient(s.ID, s.IP, s.Port, s.logger)
 	if err != nil {
 		return err
 	}
-	err = awsClient.UpdateCaStatus(ctx, caName, status)
+	err = awsClient.UpdateCaStatus(ctx, caName, status, certificateID)
 	if err != nil {
 		return err
 	}
@@ -127,7 +127,9 @@ func (s *AwsConnectorSettings) UpdateCertStatus(ctx context.Context, caName stri
 	if err != nil {
 		return err
 	}
-	err = awsClient.UpdateCertStatus(ctx, caName, certSerialNumber, status)
+	level.Info(s.logger).Log("msg", deviceCert)
+	level.Info(s.logger).Log("msg", caCert)
+	err = awsClient.UpdateCertStatus(ctx, caName, certSerialNumber, status, deviceCert, caCert)
 	if err != nil {
 		return err
 	}

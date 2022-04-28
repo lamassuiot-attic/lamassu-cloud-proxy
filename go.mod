@@ -13,7 +13,7 @@ require (
 	github.com/hashicorp/consul/api v1.10.1
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/lamassuiot/lamassu-aws-connector v0.0.1
-	github.com/lamassuiot/lamassu-ca v1.0.10
+	github.com/lamassuiot/lamassu-ca v1.0.21
 	github.com/lib/pq v1.10.4
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/streadway/amqp v1.0.0

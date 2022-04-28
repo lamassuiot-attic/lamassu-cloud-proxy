@@ -17,7 +17,7 @@ import (
 	migratePostgres "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/hashicorp/consul/api"
-	lamassucaclient "github.com/lamassuiot/lamassu-ca/client"
+	lamassucaclient "github.com/lamassuiot/lamassu-ca/pkg/client"
 	"github.com/lamassuiot/lamassu-cloud-proxy/pkg/server/api/service"
 	"github.com/lamassuiot/lamassu-cloud-proxy/pkg/server/api/transport"
 	"github.com/lamassuiot/lamassu-cloud-proxy/pkg/server/api/utils"

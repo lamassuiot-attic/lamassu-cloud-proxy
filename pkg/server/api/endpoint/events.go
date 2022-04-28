@@ -7,14 +7,14 @@ type LamassuCaCreateEvent struct {
 	SerialNumber string `json:"serial_number"`
 }
 
-// io.lamassu.ca.delete
-type LamassuCaDeleteEvent struct {
+// io.lamassu.ca.update
+type LamassuCaUpdateStatusEvent struct {
 	CaName string `json:"name"`
 	Status string `json:"status"`
 }
 
-// io.lamassu.delete.cert
-type LamassuDeleteCertEvent struct {
+// io.lamassu.cert.update
+type LamassuCertUpdateStatusEvent struct {
 	CaName       string `json:"name"`
 	Status       string `json:"status"`
 	SerialNumber string `json:"serial_number"`

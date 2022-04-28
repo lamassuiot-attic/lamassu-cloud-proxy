@@ -73,3 +73,12 @@ type CloudProviderCAConfig struct {
 	CAName string      `json:"ca_name"`
 	Config interface{} `json:"config"`
 }
+type CaConfig struct {
+	ARN            string `json:"ARN"`
+	CertificateID  string `json:"CertificateID"`
+	CreationDate   string `json:"CreationDate"`
+	CAName         string `json:"CAName"`
+	Status         string `json:"Status"`
+	PolicyStatus   string `json:"PolicyStatus"`
+	PolicyDocumnet string `json:"PolicyDocumnet"`
+}

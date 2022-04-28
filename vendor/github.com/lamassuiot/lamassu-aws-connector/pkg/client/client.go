@@ -15,8 +15,8 @@ type AwsConnectorClient interface {
 	AttachAccessPolicy(ctx context.Context, caName string, caSerialNumber string, serializedAccessPolicy string) error
 	GetConfiguration(ctx context.Context) (AWSConfig, error)
 	GetDeviceConfiguration(ctx context.Context, deviceID string) (interface{}, error)
-	UpdateCaStatus(ctx context.Context, caName string, status string) error
-	UpdateCertStatus(ctx context.Context, caName string, serialNumber string, status string) error
+	UpdateCaStatus(ctx context.Context, caName string, status string, certificateID string) error
+	UpdateCertStatus(ctx context.Context, caName string, serialNumber string, status string, deviceCert string, caCert string) error
 }
 type AwsConnectorClientConfig struct {
 	client BaseClient
@@ -62,12 +62,13 @@ func (s *AwsConnectorClientConfig) RegisterCA(ctx context.Context, caName string
 
 	return nil
 }
-func (s *AwsConnectorClientConfig) UpdateCaStatus(ctx context.Context, caName string, status string) error {
+func (s *AwsConnectorClientConfig) UpdateCaStatus(ctx context.Context, caName string, status string, certificateID string) error {
 	level.Info(s.logger).Log("msg", "Update CA Status to AWS")
 
 	awsUpdateCaStatus := awsUpdateCaStatus{
-		CaName: caName,
-		Status: status,
+		CaName:        caName,
+		Status:        status,
+		CertificateID: certificateID,
 	}
 	awsUpdateCaStatusBytes, err := json.Marshal(awsUpdateCaStatus)
 	if err != nil {
@@ -88,13 +89,15 @@ func (s *AwsConnectorClientConfig) UpdateCaStatus(ctx context.Context, caName st
 
 	return nil
 }
-func (s *AwsConnectorClientConfig) UpdateCertStatus(ctx context.Context, deviceID string, serialNumber string, status string) error {
+func (s *AwsConnectorClientConfig) UpdateCertStatus(ctx context.Context, deviceID string, serialNumber string, status string, deviceCert string, caCert string) error {
 	level.Info(s.logger).Log("msg", "Update Cert Status to AWS")
 
 	awsUpdateCertStatus := awsUpdateCertStatus{
 		DeviceID:     deviceID,
 		SerialNumber: serialNumber,
 		Status:       status,
+		DeviceCert:   deviceCert,
+		CaCert:       caCert,
 	}
 	awsUpdateCertStatusBytes, err := json.Marshal(awsUpdateCertStatus)
 	if err != nil {

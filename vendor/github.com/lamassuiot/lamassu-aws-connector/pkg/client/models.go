@@ -37,11 +37,14 @@ type DeviceCertificate struct {
 	UpdateDate string `json:"update_date"`
 }
 type awsUpdateCaStatus struct {
-	CaName string `json:"ca_name"`
-	Status string `json:"status"`
+	CaName        string `json:"ca_name"`
+	Status        string `json:"status"`
+	CertificateID string `json:"certificate_id"`
 }
 type awsUpdateCertStatus struct {
 	DeviceID     string `json:"device_id"`
 	SerialNumber string `json:"serial_number"`
 	Status       string `json:"status"`
+	DeviceCert   string `json:"device_cert"`
+	CaCert       string `json:"ca_cert"`
 }
